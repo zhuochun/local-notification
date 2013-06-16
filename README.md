@@ -19,11 +19,14 @@ To use this plugin, you need to perform the following steps:
   - Change `YourClass.class` on `line 73` to your class where the intent will be called.
   - Reference `R.drawable.ic_launcher` on `line 79` to your own icon.
 5. Update your `res/xml/config.xml` file, include the following line within the `plugins` tag:
-  ```
+
+  ```xml
   <plugin name="LocalNotification" value="com.bicrement.plugins.localNotification.LocalNotification" />
   ```
+
 6. Add the following fragment in your `AndroidManifest.xml` inside the `application` tag:
-  ```
+
+  ```xml
   <receiver android:name="com.bicrement.plugins.localNotification.AlarmReceiver" >
   </receiver>
   
@@ -33,10 +36,14 @@ To use this plugin, you need to perform the following steps:
       </intent-filter>
   </receiver>
   ```
+
   The first part tells Android to launch the AlarmReceiver class when the alarm is be triggered. This will also work when the application is not running.
+
   The second part restores all added alarms upon device reboot (because Android 'forgets' all alarms after a restart).
+
 7. The following piece of code is a minimal example in which you can test the notification:
-  ```
+
+  ```html
   <script type="text/javascript">
   var notification = cordova.require("cordova/plugin/localNotification")
   
@@ -58,10 +65,13 @@ To use this plugin, you need to perform the following steps:
   document.addEventListener("deviceready", appReady, false);
   </script>
   ```
+
 8. You can use the following commands:
-  ```
+
+  ```javascript
   notification.add({ date: new Date(), message: 'an Android alarm', id: 123 });
   notification.cancel(123); 
   notification.cancelAll();
   ```
+
 9. There is a detailed example in the `demo` folder, refer to `www\index.html` file.
