@@ -16,11 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+var notification = cordova.require("cordova/plugin/localNotification");
+
 var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
     },
+
     // Bind Event Listeners
     //
     // Bind any events that are required on startup. Common events are:
@@ -28,6 +32,7 @@ var app = {
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
+
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
@@ -35,15 +40,21 @@ var app = {
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
     },
+
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+        var btn = document.getElementById("notify");
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+        btn.addEventListener("click", function() {
+            console.log("btn notify clicked");
 
-        console.log('Received Event: ' + id);
+            notification.add({
+                date : new Date(),
+                message : "Phonegap - Local Notification\r\nSubtitle comes after linebreak",
+                ticker : "This is a sample ticker text",
+                repeatDaily : false,
+                id : 4
+            });
+        });
     }
 };
