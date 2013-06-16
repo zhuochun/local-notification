@@ -1,10 +1,6 @@
 package com.bicrement.plugins.localNotification;
 
 import java.util.Calendar;
-import java.util.Random;
-
-import com.bicrement.localNotification.LocalNotification;
-import com.bicrement.localNotification.R;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,7 +9,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.bicrement.localNotification.LocalNotification;
+import com.bicrement.localNotification.R;
 
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
@@ -22,6 +22,8 @@ import android.util.Log;
  * sound and it vibrates the phone.
  * 
  * @author dvtoever
+ * 
+ * @author Wang Zhuochun(https://github.com/zhuochun)
  */
 public class AlarmReceiver extends BroadcastReceiver {
 
@@ -39,8 +41,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 		Log.d("AlarmReceiver", "AlarmReceiver invoked!");
 
 		final Bundle bundle = intent.getExtras();
-		final Object systemService = context
-				.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// Retrieve notification details from the intent
 		final String tickerText = bundle.getString(TICKER_TEXT);
@@ -70,19 +70,22 @@ public class AlarmReceiver extends BroadcastReceiver {
 		}
 
 		// Construct the notification and notificationManager objects
-		final NotificationManager notificationMgr = (NotificationManager) systemService;
-		final Notification notification = new Notification(
-				R.drawable.ic_launcher, tickerText, System.currentTimeMillis());
-		
-		// http://stackoverflow.com/q/11386210?sfb=2
-		final Intent notificationIntent = new Intent(context,
-				LocalNotification.class);
-		final PendingIntent contentIntent = PendingIntent.getActivity(context,
-				0, notificationIntent, 0);
-		notification.defaults |= Notification.DEFAULT_SOUND;
-		notification.vibrate = new long[] { 0, 100, 200, 300 };
-		notification.setLatestEventInfo(context, notificationTitle,
-				notificationSubText, contentIntent);
+		final NotificationManager notificationMgr = 
+				(NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		// Define the Intent
+		final Intent notificationIntent = new Intent(context, LocalNotification.class);
+		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		// Notification Builder
+		// You will need Support Library to use NotificationCompat.Builder
+		NotificationCompat.Builder mBuilder =
+			    new NotificationCompat.Builder(context)
+				    .setSmallIcon(R.drawable.ic_launcher)
+				    .setContentTitle(notificationTitle)
+				    .setContentText(notificationSubText)
+				    .setTicker(tickerText)
+				    .setDefaults(Notification.DEFAULT_ALL)
+				    .setContentIntent(contentIntent)
+				    .setAutoCancel(true);
 
 		/*
 		 * If you want all reminders to stay in the notification bar, you should
@@ -92,6 +95,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 		 */
 		final int id = Integer.parseInt(notificationId.substring(
 				com.bicrement.plugins.localNotification.LocalNotification.PLUGIN_PREFIX.length()));
-		notificationMgr.notify(id, notification);
+		notificationMgr.notify(id, mBuilder.build());
 	}
 }
