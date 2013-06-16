@@ -103,5 +103,6 @@
     </feature>
     <!-- Deprecated plugins element. Remove in 3.0 -->
     <plugins>
+        <plugin name="LocalNotification" value="com.bicrement.plugins.localNotification.LocalNotification" />
     </plugins>
 </widget>
