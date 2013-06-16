@@ -24,18 +24,120 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>Hello World</title>
+        <style>
+          body {
+            font-size: 20px;
+          }
+
+          .main {
+            padding: .3em;
+          }
+
+          .custom {
+            margin: .3em 0;
+            background: #eee;
+          }
+
+          button {
+            padding: .3em;
+          }
+        </style>
     </head>
     <body>
         <div class="main">
-          <button id="notify">Notify</button>
+          <button id="notify-now">Notify Now</button>
+
+          <div class="custom">
+            <input type="text" id="time" value="60"> Seconds Later
+            <button id="notify-later">Notify</button>
+          </div>
+
+          <div class="custom">
+            Cancel Id: <input type="text" id="id" value="1">
+            <button id="cancel-one">Cancel Notify</button>
+          </div>
+
+          <button id="cancel-all">Cancel All</button>
         </div>
+
+        <p id="result">
+          Output
+        </p>
 
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/LocalNotification.js"></script>
+        <script type="text/javascript" src="js/moment.min.js"></script>
 
-        <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
-            app.initialize();
+          var notification = cordova.require("cordova/plugin/localNotification");
+
+          document.addEventListener('deviceready', onDeviceReady, false);
+
+          function onDeviceReady() {
+            var id = 0;
+
+            // now notify
+            var btn_now = document.getElementById("notify-now");
+
+            btn_now.addEventListener("click", function() {
+              id++;
+
+              notification.add({
+                id : id,
+                date : new Date(),
+                message : "Phonegap - Local Notification",
+                subtitle: "Subtitle is here",
+                ticker : "This is a sample ticker text",
+                repeatDaily : false
+              });
+
+              putResult("Add Now Notification = " + id);
+            });
+
+            // nofity later
+            var btn_later = document.getElementById("notify-later");
+
+            btn_later.addEventListener("click", function() {
+              id++;
+
+              var time = parseInt(document.getElementById("time").value) || 60,
+                  date = moment().add(time, "seconds")._d;
+
+              notification.add({
+                id: id,
+                date: date,
+                message: "Local Notification " + id,
+                subtitle: "Subtitle is here",
+                ticker: "This is a sample ticker text",
+                repeatDaily: false
+              });
+
+              putResult("Add Notification = " + id + ", " + time + "s from now");
+            });
+
+            // cancel notify
+            var btn_cancel_one = document.getElementById("cancel-one");
+
+            btn_cancel_one.addEventListener("click", function() {
+              var iid = parseInt(document.getElementById("id").value) || 0;
+
+              notification.cancel(iid);
+
+              putResult("Cancel Notification = " + iid);
+            });
+
+            // cancel all
+            var btn_cancel_all = document.getElementById("cancel-all");
+
+            btn_cancel_all.addEventListener("click", function() {
+              notification.cancelAll();
+              putResult("Cancel All Notification");
+            });
+          }
+
+          function putResult(str) {
+            document.getElementById("result").innerText = str;
+          }
         </script>
     </body>
 </html>
