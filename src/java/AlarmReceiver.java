@@ -1,4 +1,4 @@
-package com.phonegap.plugin.localnotification;
+package com.bicrement.plugins.localNotification;
 
 import java.util.Calendar;
 
@@ -35,7 +35,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 		Log.d("AlarmReceiver", "AlarmReceiver invoked!");
 
 		final Bundle bundle = intent.getExtras();
-		final Object systemService = context.getSystemService(Context.NOTIFICATION_SERVICE);
+		final Object systemService = context
+				.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		// Retrieve notification details from the intent
 		final String tickerText = bundle.getString(TICKER_TEXT);
@@ -44,9 +45,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 		int notificationId = 0;
 
 		try {
-			notificationId = Integer.parseInt(bundle.getString(NOTIFICATION_ID));
+			notificationId = Integer
+					.parseInt(bundle.getString(NOTIFICATION_ID));
 		} catch (Exception e) {
-			Log.d("AlarmReceiver", "Unable to process alarm with id: " + bundle.getString(NOTIFICATION_ID));
+			Log.d("AlarmReceiver",
+					"Unable to process alarm with id: "
+							+ bundle.getString(NOTIFICATION_ID));
 		}
 
 		Calendar currentCal = Calendar.getInstance();
@@ -63,18 +67,25 @@ public class AlarmReceiver extends BroadcastReceiver {
 			 * 'forgotten' reminder for that day. Therefore we ignore the event
 			 * if Android tries to 'catch up'.
 			 */
-			Log.d(LocalNotification.PLUGIN_NAME, "AlarmReceiver, ignoring alarm since it is due");
+			Log.d("LocalNotification AlarmReceiver",
+					"AlarmReceiver, ignoring alarm since it is due");
 			return;
 		}
 
 		// Construct the notification and notificationManager objects
 		final NotificationManager notificationMgr = (NotificationManager) systemService;
-		final Notification notification = new Notification(R.drawable.ic_launcher, tickerText,
-				System.currentTimeMillis());
-		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, new Intent(), 0);
+		final Notification notification = new Notification(
+				R.drawable.ic_launcher, tickerText, System.currentTimeMillis());
+		
+		// http://stackoverflow.com/q/11386210?sfb=2
+		final Intent notificationIntent = new Intent(context,
+				YourClass.class);
+		final PendingIntent contentIntent = PendingIntent.getActivity(context,
+				0, notificationIntent, 0);
 		notification.defaults |= Notification.DEFAULT_SOUND;
 		notification.vibrate = new long[] { 0, 100, 200, 300 };
-		notification.setLatestEventInfo(context, notificationTitle, notificationSubText, contentIntent);
+		notification.setLatestEventInfo(context, notificationTitle,
+				notificationSubText, contentIntent);
 
 		/*
 		 * If you want all reminders to stay in the notification bar, you should

@@ -1,17 +1,28 @@
 /*-
  * Phonegap LocalNotification Plugin for Android
+ *
+ * Support Phonegap 2.x.x
  * 
- * Created by Daniel van 't Oever 2012 MIT Licensed
+ * Originally Created by Daniel van 't Oever 2012 MIT Licensed
+ * 
+ * Edited by Zhuochun (https://github.com/zhuochun)
  * 
  * Usage: 
+ *
+ * var notification = cordova.require("cordova/plugin/localNotification");
  * 
- * plugins.localNotification.add({ date: new Date(), message: 'This is an Android alarm using the statusbar', id: 123 });
- * plugins.localNotification.cancel(123); 
- * plugins.localNotification.cancelAll();
+ * notification.add({ date: new Date(),
+ *                    message: 'This is an Android alarm using the statusbar',
+ *                    id: 123 });
+ * notification.cancel(123); 
+ * notification.cancelAll();
  * 
  * This interface is similar to the existing iOS LocalNotification plugin created by Greg Allen
  */
-if (typeof PhoneGap !== "undefined") {
+
+cordova.define('cordova/plugin/localNotification', function(require, exports, module) {    
+
+    var exec = require("cordova/exec");
 
 	/**
 	 * Empty constructor
@@ -28,7 +39,7 @@ if (typeof PhoneGap !== "undefined") {
 	 *            Array with arguments. Valid arguments are date, message,
 	 *            repeatDaily and id
 	 */
-	LocalNotification.prototype.add = function(options) {
+	LocalNotification.prototype.add = function(options, succeed, failed) {
 		var defaults = {
 			date : new Date(),
 			message : '',
@@ -48,7 +59,7 @@ if (typeof PhoneGap !== "undefined") {
 				defaults[key] = options[key];
 		}
 
-		PhoneGap.exec(null, null, 'LocalNotification', 'add', new Array(defaults));
+		exec(succeed, failed, 'LocalNotification', 'add', new Array(defaults));
 	};
 
 	/**
@@ -58,26 +69,19 @@ if (typeof PhoneGap !== "undefined") {
 	 *            The ID that was used when creating the notification using the
 	 *            'add' method.
 	 */
-	LocalNotification.prototype.cancel = function(notificationId) {
-		PhoneGap.exec(null, null, 'LocalNotification', 'cancel', new Array({
-			id : notificationId
+	LocalNotification.prototype.cancel = function(id, succeed, failed) {
+		exec(succeed, failed, 'LocalNotification', 'cancel', new Array({
+			id : id
 		}));
 	};
 
 	/**
 	 * Cancel all notifications that were created by your application.
 	 */
-	LocalNotification.prototype.cancelAll = function() {
-		PhoneGap.exec(null, null, 'LocalNotification', 'cancelAll', new Array());
+	LocalNotification.prototype.cancelAll = function(succeed, failed) {
+		exec(succeed, failed, 'LocalNotification', 'cancelAll', new Array());
 	};
 
-	/**
-	 * Register this plugin with phonegap
-	 */
-	PhoneGap.addConstructor(function() {
-		if (!window.plugins) {
-			window.plugins = {};
-		}
-		window.plugins.localNotification = new LocalNotification();
-	});
-}
+    module.exports = new LocalNotification();
+
+});
