@@ -1,6 +1,7 @@
 package com.bicrement.plugins.localNotification;
 
 import java.util.Calendar;
+import java.util.Random;
 
 import com.bicrement.localNotification.LocalNotification;
 import com.bicrement.localNotification.R;
@@ -45,16 +46,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 		final String tickerText = bundle.getString(TICKER_TEXT);
 		final String notificationTitle = bundle.getString(TITLE);
 		final String notificationSubText = bundle.getString(SUBTITLE);
-		int notificationId = 0;
+		final String notificationId = bundle.getString(NOTIFICATION_ID);
 
-		try {
-			notificationId = Integer
-					.parseInt(bundle.getString(NOTIFICATION_ID));
-		} catch (Exception e) {
-			Log.d("AlarmReceiver",
-					"Unable to process alarm with id: "
-							+ bundle.getString(NOTIFICATION_ID));
-		}
+		Log.d("AlarmReceiver", "Process alarm with id: " + notificationId);
 
 		Calendar currentCal = Calendar.getInstance();
 		int alarmHour = bundle.getInt(HOUR_OF_DAY);
@@ -96,6 +90,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 		 * notification, make sure the ID below matches the ID that you store in
 		 * the alarm intent.
 		 */
-		notificationMgr.notify(notificationId, notification);
+		final int id = Integer.parseInt(notificationId.substring(
+				com.bicrement.plugins.localNotification.LocalNotification.PLUGIN_PREFIX.length()));
+		notificationMgr.notify(id, notification);
 	}
 }

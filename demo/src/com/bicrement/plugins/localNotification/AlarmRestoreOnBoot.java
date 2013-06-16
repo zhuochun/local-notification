@@ -21,14 +21,16 @@ import android.util.Log;
  * @author dvtoever
  */
 public class AlarmRestoreOnBoot extends BroadcastReceiver {
+	
+	private AlarmHelper alarm = null;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		final String pluginName = LocalNotification.PLUGIN_NAME;
+		alarm = new AlarmHelper(context);
 
 		// Obtain alarm details form Shared Preferences
 		final SharedPreferences alarmSettings = context.getSharedPreferences(
-				pluginName, Context.MODE_PRIVATE);
+				LocalNotification.PLUGIN_NAME, Context.MODE_PRIVATE);
 		final Map<String, ?> allAlarms = alarmSettings.getAll();
 		final Set<String> alarmIds = allAlarms.keySet();
 
@@ -38,30 +40,38 @@ public class AlarmRestoreOnBoot extends BroadcastReceiver {
 		 */
 		for (String alarmId : alarmIds) {
 			try {
-				final AlarmHelper alarm = new AlarmHelper(context);
-				final JSONArray alarmDetails = new JSONArray(
-						alarmSettings.getString(alarmId, ""));
-				final AlarmOptions options = new AlarmOptions();
-
-				options.parseOptions(alarmDetails);
-
-				final boolean daily = options.isRepeatDaily();
-				final String title = options.getAlarmTitle();
-				final String subTitle = options.getAlarmSubTitle();
-				final String ticker = options.getAlarmTicker();
-				final String id = options.getNotificationId();
-				final Calendar cal = options.getCal();
-
-				alarm.addAlarm(daily, title, subTitle, ticker, id, cal);
-
+				this.processAlarm(new JSONArray(alarmSettings.getString(alarmId, "")));
 			} catch (JSONException e) {
-				Log.d(pluginName,
+				Log.d(LocalNotification.PLUGIN_NAME,
 						"AlarmRestoreOnBoot: Error while restoring alarm details after reboot: "
 								+ e.toString());
 			}
-
-			Log.d(pluginName,
-					"AlarmRestoreOnBoot: Successfully restored alarms upon reboot");
 		}
+		
+		Log.d(LocalNotification.PLUGIN_NAME,
+				"AlarmRestoreOnBoot: Successfully restored alarms upon reboot");
+	}
+	
+	public boolean processAlarm(JSONArray args) throws JSONException {
+		return this.add(args.getInt(0), args.getString(1), args.getString(2),
+				args.getString(3), args.getJSONArray(4), args.getString(5));
+	}
+	
+	public boolean add(int id, String title, String subtitle, String ticker, JSONArray date, String repeat) {
+		Calendar calendar = Calendar.getInstance();
+		
+		if (date.length() != 0) {
+			try {
+				calendar.set(date.getInt(0), date.getInt(1), date.getInt(2),
+						date.getInt(3), date.getInt(4), date.getInt(5));
+			} catch (JSONException e) {
+				
+			}
+		}
+		
+		boolean result = alarm.addAlarm(repeat.equalsIgnoreCase("true"),
+				title, subtitle, ticker, LocalNotification.PLUGIN_PREFIX + id, calendar);
+		
+		return result;
 	}
 }

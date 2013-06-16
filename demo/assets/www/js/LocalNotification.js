@@ -30,6 +30,27 @@ cordova.define('cordova/plugin/localNotification', function(require, exports, mo
 	var LocalNotification = function() {
 	};
 
+    /**
+     * Private Helper
+     */
+    function _convertDateToArray(date) {
+        if (!date) {
+            return [];
+        }
+
+        var t = [];
+
+        t.push( date.getFullYear() );
+        t.push( date.getMonth() );
+        t.push( date.getDate() );
+        t.push( date.getHours() );
+        t.push( date.getMinutes() );
+        t.push( date.getSeconds() );
+        t.push( date.getMilliseconds() );
+
+        return t;
+    }
+
 	/**
 	 * Register a notification message for a specific date / time
 	 * 
@@ -40,26 +61,16 @@ cordova.define('cordova/plugin/localNotification', function(require, exports, mo
 	 *            repeatDaily and id
 	 */
 	LocalNotification.prototype.add = function(options, succeed, failed) {
-		var defaults = {
-			date : new Date(),
-			message : '',
-			ticker : '',
-			repeatDaily : false,
-			id : ""
-		};
+		var params = [];
+        
+        params.push( options.id || 0 ); // id
+        params.push( options.message || "" ); // message
+        params.push( options.subtitle || "" ); // subtitle
+        params.push( options.ticker || "" ); // ticker
+        params.push( _convertDateToArray(options.date) ); // date
+        params.push( options.repeatDaily ? "true" : "false" ); // repeat
 
-		if (options.date) {
-			options.date = (options.date.getMonth()) + "/" + (options.date.getDate()) + "/"
-					+ (options.date.getFullYear()) + "/" + (options.date.getHours()) + "/"
-					+ (options.date.getMinutes());
-		}
-
-		for ( var key in defaults) {
-			if (typeof options[key] !== "undefined")
-				defaults[key] = options[key];
-		}
-
-		exec(succeed, failed, 'LocalNotification', 'add', new Array(defaults));
+		exec(succeed, failed, 'LocalNotification', 'add', params);
 	};
 
 	/**
@@ -70,16 +81,14 @@ cordova.define('cordova/plugin/localNotification', function(require, exports, mo
 	 *            'add' method.
 	 */
 	LocalNotification.prototype.cancel = function(id, succeed, failed) {
-		exec(succeed, failed, 'LocalNotification', 'cancel', new Array({
-			id : id
-		}));
+		exec(succeed, failed, 'LocalNotification', 'cancel', [id]);
 	};
 
 	/**
 	 * Cancel all notifications that were created by your application.
 	 */
 	LocalNotification.prototype.cancelAll = function(succeed, failed) {
-		exec(succeed, failed, 'LocalNotification', 'cancelAll', new Array());
+		exec(succeed, failed, 'LocalNotification', 'cancelAll', []);
 	};
 
     module.exports = new LocalNotification();
