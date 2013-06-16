@@ -12,9 +12,6 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.bicrement.localNotification.LocalNotification;
-import com.bicrement.localNotification.R;
-
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
  * reads the information in the intent and displays this information in the
@@ -73,7 +70,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		final NotificationManager notificationMgr = 
 				(NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		// Define the Intent
-		final Intent notificationIntent = new Intent(context, LocalNotification.class);
+		final Intent notificationIntent = new Intent(context, YourClass.class);
 		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		// Notification Builder
 		// You will need Support Library to use NotificationCompat.Builder

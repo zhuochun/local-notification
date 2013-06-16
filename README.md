@@ -2,18 +2,22 @@
 
 Tested on `PhoneGap 2.8.0`
 
-Originally cloned from https://github.com/phonegap/phonegap-plugins/tree/master/Android/LocalNotification
+Originally forked from https://github.com/phonegap/phonegap-plugins/tree/master/Android/LocalNotification
+
+You need to have `Android Support Library`, as it provides the best notification support for a wide range of platforms:
+
+- Right click on your project, select `Android Tools`, choose `Add Support Library` (on Eclipse).
 
 # Readme
 
 To use this plugin, you need to perform the following steps:
 
-1. Copy `src/LocalNotification.js` file to your `www` folder and include it in your `index.html`
+1. Copy `src/javascript/LocalNotification.js` file to your `www` folder and include it in your `index.html`
 2. Create a package `com.bicrement.plugins.localNotification`
-3. Copy all `src/*.java` files into this package
-4. Fix the following in `AlarmReceiver.java`:
-  - Reference `R.drawable.ic_launcher` on `line 78` to your own icon.
-  - Change `YourClass.class` on `line 82` to your class where the intent will be called.
+3. Copy all `src/java/*.java` files into this package
+4. Modify the following in `AlarmReceiver.java`:
+  - Change `YourClass.class` on `line 73` to your class where the intent will be called.
+  - Reference `R.drawable.ic_launcher` on `line 79` to your own icon.
 5. Update your `res/xml/config.xml` file, include the following line within the `plugins` tag:
   ```
   <plugin name="LocalNotification" value="com.bicrement.plugins.localNotification.LocalNotification" />
@@ -42,11 +46,12 @@ To use this plugin, you need to perform the following steps:
       console.log("Device ready");
   
       notification.add({
-          date : new Date(),
-          message : "Phonegap - Local Notification\r\nSubtitle comes after linebreak",
-          ticker : "This is a sample ticker text",
-          repeatDaily : false,
-          id : 4
+          id: id,
+          date: new Date(),
+          message: "Phonegap - Local Notification",
+          subtitle: "Subtitle is here",
+          ticker: "This is a sample ticker text",
+          repeatDaily: false
       });
   }
   
@@ -59,3 +64,4 @@ To use this plugin, you need to perform the following steps:
   notification.cancel(123); 
   notification.cancelAll();
   ```
+9. There is a detailed example in the `demo` folder, refer to `www\index.html` file.
