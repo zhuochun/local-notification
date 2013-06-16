@@ -19,9 +19,9 @@ import android.util.Log;
  * care of firing the event. When the event is processed, a notification is put
  * in the Android status bar.
  * 
- * @author Daniel van 't Oever
+ * @author Daniel van 't Oever (original author)
  * 
- * @author Wang Zhuochun (https://github.com/zhuochun)
+ * @author Wang Zhuochun(https://github.com/zhuochun)
  */
 public class LocalNotification extends CordovaPlugin {
 

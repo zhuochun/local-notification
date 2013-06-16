@@ -18,12 +18,13 @@ import android.util.Log;
  * @see LocalNotification
  * @see AlarmRestoreOnBoot
  * 
- * @author dvtoever
+ * @author dvtoever (original author)
+ * 
+ * @author Wang Zhuochun(https://github.com/zhuochun)
  */
 public class AlarmHelper {
 
 	private Context ctx;
-	public static final String INTENT_PREFIX = "LocalNotification_";
 
 	public AlarmHelper(Context context) {
 		this.ctx = context;

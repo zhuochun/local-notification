@@ -19,12 +19,14 @@ import android.util.Log;
  * care of firing the event. When the event is processed, a notification is put
  * in the Android status bar.
  * 
- * @author Daniel van 't Oever
- * @author Wang Zhuochun (https://github.com/zhuochun)
+ * @author Daniel van 't Oever (original author)
+ * 
+ * @author Wang Zhuochun(https://github.com/zhuochun)
  */
 public class LocalNotification extends CordovaPlugin {
 
 	public static final String PLUGIN_NAME = "LocalNotification";
+	public static final String PLUGIN_PREFIX = "LocalNotification_";
 
 	/**
 	 * Delegate object that does the actual alarm registration. Is reused by the
@@ -37,34 +39,25 @@ public class LocalNotification extends CordovaPlugin {
 			CallbackContext callbackContext) throws JSONException {
 		boolean success = false;
 
-		Log.d(PLUGIN_NAME, "Plugin execute called with action: " + action);
-		
 		final CordovaInterface cordova = this.cordova;
 
 		alarm = new AlarmHelper(cordova.getActivity().getBaseContext());
-
-		final AlarmOptions alarmOptions = new AlarmOptions();
-		/*
-		 * Determine which action of the plugin needs to be invoked
-		 */
-		String alarmId = alarmOptions.getNotificationId();
-
-		alarmOptions.parseOptions(args);
-
+		
+		Log.d(PLUGIN_NAME, "Plugin execute called with action: " + action);
+		
 		if (action.equalsIgnoreCase("add")) {
-			final boolean daily = alarmOptions.isRepeatDaily();
-			final String title = alarmOptions.getAlarmTitle();
-			final String subTitle = alarmOptions.getAlarmSubTitle();
-			final String ticker = alarmOptions.getAlarmTicker();
+			persistAlarm(args.getInt(0), args);
+			
+			Log.d(PLUGIN_NAME, "Add Notification with Id: " + args.getInt(0));
 
-			persistAlarm(alarmId, args);
-
-			success = this.add(daily, title, subTitle, ticker, alarmId,
-					alarmOptions.getCal());
+			success = this.add(args.getInt(0), args.getString(1), args.getString(2),
+					args.getString(3), args.getJSONArray(4), args.getString(5));
 		} else if (action.equalsIgnoreCase("cancel")) {
-			unpersistAlarm(alarmId);
+			unpersistAlarm(args.getInt(0));
+			
+			Log.d(PLUGIN_NAME, "Cancel Notification with Id: " + args.getInt(0));
 
-			success = this.cancelNotification(alarmId);
+			success = this.cancelNotification(args.getInt(0));
 		} else if (action.equalsIgnoreCase("cancelall")) {
 			unpersistAlarmAll();
 
@@ -80,33 +73,23 @@ public class LocalNotification extends CordovaPlugin {
 
 	/**
 	 * Set an alarm
-	 * 
-	 * @param repeatDaily
-	 *            If true, the alarm interval will be set to one day.
-	 * @param alarmTitle
-	 *            The title of the alarm as shown in the Android notification
-	 *            panel
-	 * @param alarmSubTitle
-	 *            The subtitle of the alarm
-	 * @param alarmId
-	 *            The unique ID of the notification
-	 * @param cal
-	 *            A calendar object that represents the time at which the alarm
-	 *            should first be started
-	 * @return A pluginresult.
 	 */
-	public boolean add(boolean repeatDaily, String alarmTitle,
-			String alarmSubTitle, String alarmTicker, String alarmId,
-			Calendar cal) {
-		final long triggerTime = cal.getTimeInMillis();
-		final String recurring = repeatDaily ? "daily" : "onetime";
-
-		Log.d(PLUGIN_NAME, "Adding " + recurring + " notification: '"
-				+ alarmTitle + alarmSubTitle + "' with id: " + alarmId
-				+ " at timestamp: " + triggerTime);
-
-		boolean result = alarm.addAlarm(repeatDaily, alarmTitle, alarmSubTitle,
-				alarmTicker, alarmId, cal);
+	public boolean add(int id, String title, String subtitle, String ticker, JSONArray date, String repeat) {
+		Calendar calendar = Calendar.getInstance();
+		
+		if (date.length() != 0) {
+			try {
+				calendar.set(date.getInt(0), date.getInt(1), date.getInt(2),
+						date.getInt(3), date.getInt(4), date.getInt(5));
+				
+				Log.d(PLUGIN_NAME, "Add Alarm at " + calendar.toString());
+			} catch (JSONException e) {
+				Log.d(PLUGIN_NAME, "JSONException in add " + calendar.toString());
+			}
+		}
+		
+		boolean result = alarm.addAlarm(repeat.equalsIgnoreCase("true"),
+				title, subtitle, ticker, PLUGIN_PREFIX + id, calendar);
 		
 		return result;
 	}
@@ -118,11 +101,10 @@ public class LocalNotification extends CordovaPlugin {
 	 *            The original ID of the notification that was used when it was
 	 *            registered using addNotification()
 	 */
-	public boolean cancelNotification(String notificationId) {
-		Log.d(PLUGIN_NAME, "cancelNotification: Canceling event with id: "
-				+ notificationId);
+	public boolean cancelNotification(int id) {
+		Log.d(PLUGIN_NAME, "cancel Notification with id: " + id);
 
-		boolean result = alarm.cancelAlarm(notificationId);
+		boolean result = alarm.cancelAlarm(id);
 
 		return result;
 	}
@@ -143,6 +125,7 @@ public class LocalNotification extends CordovaPlugin {
 		
 		final SharedPreferences alarmSettings = cordova.getActivity().getBaseContext().getSharedPreferences(
 				PLUGIN_NAME, Context.MODE_PRIVATE);
+		
 		final boolean result = alarm.cancelAll(alarmSettings);
 
 		return result;
@@ -160,13 +143,13 @@ public class LocalNotification extends CordovaPlugin {
 	 * 
 	 * @return true when successfull, otherwise false
 	 */
-	private boolean persistAlarm(String alarmId, JSONArray optionsArr) {
+	private boolean persistAlarm(int id, JSONArray args) {
 		final CordovaInterface cordova = this.cordova;
 		
 		final Editor alarmSettingsEditor = cordova.getActivity().getBaseContext().getSharedPreferences(
 				PLUGIN_NAME, Context.MODE_PRIVATE).edit();
 
-		alarmSettingsEditor.putString(alarmId, optionsArr.toString());
+		alarmSettingsEditor.putString(PLUGIN_PREFIX + id, args.toString());
 
 		return alarmSettingsEditor.commit();
 	}
@@ -179,13 +162,13 @@ public class LocalNotification extends CordovaPlugin {
 	 * 
 	 * @return true when successfull, otherwise false
 	 */
-	private boolean unpersistAlarm(String alarmId) {
+	private boolean unpersistAlarm(int id) {
 		final CordovaInterface cordova = this.cordova;
 		
 		final Editor alarmSettingsEditor = cordova.getActivity().getBaseContext().getSharedPreferences(
 				PLUGIN_NAME, Context.MODE_PRIVATE).edit();
 
-		alarmSettingsEditor.remove(alarmId);
+		alarmSettingsEditor.remove(PLUGIN_PREFIX + id);
 
 		return alarmSettingsEditor.commit();
 	}

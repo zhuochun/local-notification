@@ -18,7 +18,9 @@ import android.util.Log;
  * @see LocalNotification
  * @see AlarmRestoreOnBoot
  * 
- * @author dvtoever
+ * @author dvtoever (original author)
+ * 
+ * @author Wang Zhuochun(https://github.com/zhuochun)
  */
 public class AlarmHelper {
 
@@ -37,11 +39,12 @@ public class AlarmHelper {
 			Calendar cal) {
 
 		final long triggerTime = cal.getTimeInMillis();
+		
 		final Intent intent = new Intent(this.ctx, AlarmReceiver.class);
 		final int hour = cal.get(Calendar.HOUR_OF_DAY);
 		final int min = cal.get(Calendar.MINUTE);
 
-		intent.setAction("" + notificationId);
+		intent.setAction(notificationId);
 		intent.putExtra(AlarmReceiver.TITLE, alarmTitle);
 		intent.putExtra(AlarmReceiver.SUBTITLE, alarmSubTitle);
 		intent.putExtra(AlarmReceiver.TICKER_TEXT, alarmTicker);
@@ -67,7 +70,11 @@ public class AlarmHelper {
 	/**
 	 * @see LocalNotification#cancelNotification(int)
 	 */
-	public boolean cancelAlarm(String notificationId) {
+	public boolean cancelAlarm(int id) {
+		return cancelAlarm(LocalNotification.PLUGIN_PREFIX + id);
+	}
+	
+	public boolean cancelAlarm(String prefixId) {
 		/*
 		 * Create an intent that looks similar, to the one that was registered
 		 * using add. Making sure the notification id in the action is the same.
@@ -75,7 +82,7 @@ public class AlarmHelper {
 		 * and cancel it.
 		 */
 		final Intent intent = new Intent(this.ctx, AlarmReceiver.class);
-		intent.setAction("" + notificationId);
+		intent.setAction(prefixId);
 
 		final PendingIntent pi = PendingIntent.getBroadcast(this.ctx, 0,
 				intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -86,6 +93,7 @@ public class AlarmHelper {
 		} catch (Exception e) {
 			return false;
 		}
+		
 		return true;
 	}
 
@@ -99,16 +107,15 @@ public class AlarmHelper {
 		for (String alarmId : alarmIds) {
 			Log.d(LocalNotification.PLUGIN_NAME,
 					"Canceling notification with id: " + alarmId);
-			String alarmInt = alarmId;
-			cancelAlarm(alarmInt);
+
+			cancelAlarm(alarmId);
 		}
 
 		return true;
 	}
 
 	private AlarmManager getAlarmManager() {
-		final AlarmManager am = (AlarmManager) this.ctx
-				.getSystemService(Context.ALARM_SERVICE);
+		final AlarmManager am = (AlarmManager) this.ctx.getSystemService(Context.ALARM_SERVICE);
 
 		return am;
 	}

@@ -21,7 +21,7 @@ import com.bicrement.localNotification.R;
  * Android notification bar. The notification uses the default notification
  * sound and it vibrates the phone.
  * 
- * @author dvtoever
+ * @author dvtoever (original author)
  * 
  * @author Wang Zhuochun(https://github.com/zhuochun)
  */
