@@ -73,8 +73,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 		final NotificationManager notificationMgr = 
 				(NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		// Define the Intent
-		final Intent notificationIntent = new Intent(context, LocalNotification.class);
-		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		final Intent notifyIntent = new Intent(context, LocalNotification.class);
+		notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		// Notification Builder
 		// You will need Support Library to use NotificationCompat.Builder
 		NotificationCompat.Builder mBuilder =

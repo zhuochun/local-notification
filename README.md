@@ -24,7 +24,9 @@ To use this plugin, you need to perform the following steps:
   <plugin name="LocalNotification" value="com.bicrement.plugins.localNotification.LocalNotification" />
   ```
 
-6. Add the following fragment in your `AndroidManifest.xml` inside the `application` tag:
+6. Add the following fragment in your `AndroidManifest.xml`:
+  - Add `android:launchMode="singleTop"` attribute to your `activity` tag.
+  - Add the following lines just before the `application` tag closes:
 
   ```xml
   <receiver android:name="com.bicrement.plugins.localNotification.AlarmReceiver" >
