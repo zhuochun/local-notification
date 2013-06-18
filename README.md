@@ -1,10 +1,10 @@
 # Local Notification Plugin for PhoneGap 2.x.x
 
-Tested on `PhoneGap 2.8.0`
+Tested on `PhoneGap 2.6.0, 2.7.0, 2.8.1`
 
 Originally forked from https://github.com/phonegap/phonegap-plugins/tree/master/Android/LocalNotification
 
-You need to have `Android Support Library`, as it provides the best notification support for a wide range of platforms:
+You have to have `Android Support Library`, as it provides the best notification support for a wide range of platforms:
 
 - Right click on your project, select `Android Tools`, choose `Add Support Library` (on Eclipse).
 
@@ -13,7 +13,7 @@ You need to have `Android Support Library`, as it provides the best notification
 To use this plugin, you need to perform the following steps:
 
 1. Copy `src/javascript/LocalNotification.js` file to your `www` folder and include it in your `index.html`
-2. Create a package `com.bicrement.plugins.localNotification`
+2. Create a package `com.bicrement.plugins.localNotification` in your `src` folder
 3. Copy all `src/java/*.java` files into this package
 4. Modify the following in `AlarmReceiver.java`:
   - Change `YourClass.class` on `line 73` to your class where the intent will be called.
@@ -55,7 +55,7 @@ To use this plugin, you need to perform the following steps:
       console.log("Device ready");
   
       notification.add({
-          id: id,
+          id: 1,
           date: new Date(),
           message: "Phonegap - Local Notification",
           subtitle: "Subtitle is here",
@@ -76,4 +76,28 @@ To use this plugin, you need to perform the following steps:
   notification.cancelAll();
   ```
 
-9. There is a detailed example in the `demo` folder, refer to `www\index.html` file.
+9. **There is a detail example in the `demo` folder**, refer to `www\index.html` file.
+
+# Licence
+
+The MIT License
+
+Copyright (c) 2013 Wang Zhuochun
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
