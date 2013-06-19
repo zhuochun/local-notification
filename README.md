@@ -63,8 +63,6 @@ To use this plugin, you need to perform the following steps:
           repeatDaily: false
       });
   }
-  
-  document.addEventListener("deviceready", appReady, false);
   </script>
   ```
 
